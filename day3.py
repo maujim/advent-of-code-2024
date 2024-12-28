@@ -28,16 +28,24 @@ def day3():
 
 def day3_part2():
     pat = re.compile(r"mul\((\d+),(\d+)\)")
-    dont_pattern = re.compile(r"don't\(\)")
-    do_pattern = re.compile(r"do\(\)")
-    disabling_pattern = re.compile(r"don't\(\).*?do\(\)")
 
     with open("day3.input") as fp:
         ans = 0
-        for line in fp:
-            new_line = re.sub(disabling_pattern, "", line)
+        lines = fp.readlines()
+        lines = ''.join(lines)
 
-            for pair in pat.findall(new_line):
+        blocks = lines.split("don't()")
+        for pair in pat.findall(blocks[0]):
+            ans += math.prod(map(int, pair))
+
+        for block in blocks[1:]:
+            more_blocks = block.split("do()")
+
+            # skip the first one because its the part that is
+            # contained between don't() and do()
+            # this also has the benefit of making this exit early if no 'do()' is found (since that will mean len(more_blocks) == 1)
+            blocks2 = ''.join(more_blocks[1:])
+            for pair in pat.findall(blocks2):
                 ans += math.prod(map(int, pair))
 
         return ans
